@@ -66,7 +66,7 @@ bool main()
 				break;
 		case 5:
 			printf_s("0:Go back\n");
-			printf_s("1:Create a dfu firmware for dfu_ce_v1\n");
+			printf_s("1:Create DFU Firmware for dfu_ce_v1\n");
 			printf_s("Enter your choice:");
 			int ut_select;
 			scanf_s("%d", &ut_select);
