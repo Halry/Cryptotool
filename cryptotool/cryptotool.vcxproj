@@ -152,6 +152,7 @@
     <ClCompile Include="cryptotool.cpp" />
     <ClCompile Include="src\ed25519.cpp" />
     <ClCompile Include="src\rng.cpp" />
+    <ClCompile Include="src\util\dfu_ce_v1_fw_handle.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

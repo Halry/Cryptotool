@@ -41,6 +41,9 @@
     <ClCompile Include="src\rng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\dfu_ce_v1_fw_handle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="libsodium\x64\Debug\v141\static\libsodium.lib">
