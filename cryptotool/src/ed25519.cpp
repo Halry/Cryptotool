@@ -43,7 +43,7 @@ bool generate_ed25519_keypair(void)
 		sodium_bin2hex(pk_display, crypto_sign_PUBLICKEYBYTES * 2 + 1, public_key, crypto_sign_PUBLICKEYBYTES);
 		printf_s("Private Key:");
 		printf_s(sk_display);
-		printf_s("\nPublic Key");
+		printf_s("\nPublic Key:");
 		printf_s(pk_display);
 		printf_s("\n");
 	}
