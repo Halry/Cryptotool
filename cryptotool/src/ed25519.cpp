@@ -29,7 +29,7 @@ bool generate_ed25519_keypair(void)
 		printf_s("Unable access file");
 		return false;
 	}
-	fwrite(public_key, sizeof(char), crypto_sign_SECRETKEYBYTES, pk_output_file);
+	fwrite(public_key, sizeof(char), crypto_sign_PUBLICKEYBYTES, pk_output_file);
 	fclose(pk_output_file);
 	printf_s("Public Key Outputed,length:%d\n", crypto_sign_PUBLICKEYBYTES);
 	printf_s("Display the output?(y or n):");

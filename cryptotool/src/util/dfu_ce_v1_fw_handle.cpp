@@ -56,22 +56,23 @@ bool util_dfu_ce_v1_fw_encrypt(void)
 	//Print out fw length and start working
 	printf_s("Input firmware length:%lld\nCrypto Worker Started\n", input_fw_size);
 	//Init output encrypted fw memory
-	uint8_t *output_fw_buf = (uint8_t*)sodium_malloc(input_fw_size + 2 + crypto_stream_chacha20_NONCEBYTES + crypto_sign_BYTES);//original fw size+16bit fw size+8bytes iv+64byte ed25519 sign
+	uint8_t *output_fw_buf = (uint8_t*)sodium_malloc(input_fw_size + 64 + crypto_sign_BYTES);//original fw size+16bit fw size+8bytes iv+64byte ed25519 sign
 	if (!output_fw_buf)
 	{
 		printf_s("Out of memory");
 		system("pause");
 	}
+	memset(output_fw_buf, 0, input_fw_size + 64 + crypto_sign_BYTES);
 	//Generate IV
 	uint8_t cc20_iv[crypto_stream_chacha20_NONCEBYTES];
 	randombytes_buf(cc20_iv, crypto_stream_chacha20_NONCEBYTES);
-	memcpy_s(output_fw_buf + 2 + crypto_sign_BYTES, crypto_stream_chacha20_NONCEBYTES, cc20_iv, crypto_stream_chacha20_NONCEBYTES);
+	memcpy_s(output_fw_buf + 2 , crypto_stream_chacha20_NONCEBYTES, cc20_iv, crypto_stream_chacha20_NONCEBYTES);
 	printf_s("ChaCha20 IV Generated\n");
 	//Sign the fw
-	crypto_sign_detached(output_fw_buf + 2, NULL, input_fw_buf, input_fw_size, sign_key_buf);
+	crypto_sign_detached(output_fw_buf + 64, NULL, input_fw_buf, input_fw_size, sign_key_buf);//Padding 64
 	printf_s("Firmware Signed\n");
 	//Encrypt the fw
-	crypto_stream_chacha20_xor(output_fw_buf + 2 + crypto_stream_chacha20_NONCEBYTES + crypto_sign_BYTES,
+	crypto_stream_chacha20_xor(output_fw_buf + 64 + crypto_sign_BYTES,
 		input_fw_buf, input_fw_size, cc20_iv, cc20_key_buf);
 	printf_s("Firmware Encrypted\n");
 	//Insert fw size to output
@@ -92,7 +93,7 @@ bool util_dfu_ce_v1_fw_encrypt(void)
 		system("pause");
 		return false;
 	}
-	fwrite(output_fw_buf, sizeof(uint8_t), input_fw_size + 2 + crypto_stream_chacha20_NONCEBYTES + crypto_sign_BYTES, output_file);
+	fwrite(output_fw_buf, sizeof(uint8_t), input_fw_size + 64 + crypto_sign_BYTES, output_file);
 	fclose(output_file);
 	printf_s("Encrypted Firmware Generated\n");
 	system("pause");
