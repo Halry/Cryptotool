@@ -1,4 +1,5 @@
 #include <stdafx.h>
+#include <string.h>
 #include <inc\util\dfu_ce_v1_fw_handle.h>
 #include <libsodium\include\sodium.h>
 bool util_dfu_ce_v1_fw_encrypt(void)
@@ -98,4 +99,99 @@ bool util_dfu_ce_v1_fw_encrypt(void)
 	printf_s("Encrypted Firmware Generated\n");
 	system("pause");
 	return true;
+}
+bool Tamper_Reset_Data_Generator(void)
+{
+	uint8_t output[64];
+	char deviceid[25];
+	char device_nonce[33];
+	uint8_t iv[8];
+	printf_s("Enter Device ID:");
+	while (fgets(deviceid, 25, stdin))
+	{
+		if (deviceid[24] == 0)
+			break;
+	}
+	printf_s("Enter Device Nonce:");
+	while (fgets(device_nonce, 33, stdin))
+	{
+		if (device_nonce[32] == 0)
+			break;
+	}
+	printf_s("Enter Encryption Key filename:");
+	char cc20_key_filename[128];
+	scanf_s(" %s", &cc20_key_filename, 128);
+	FILE * cc20_key;
+	fopen_s(&cc20_key, cc20_key_filename, "rb");
+	if (cc20_key == NULL)
+	{
+		printf_s("Unable access file");
+		system("pause");
+		return false;
+	}
+	uint8_t cc20_key_buf[crypto_stream_chacha20_KEYBYTES];
+	fread_s(cc20_key_buf, crypto_stream_chacha20_KEYBYTES, sizeof(uint8_t), crypto_stream_chacha20_KEYBYTES, cc20_key);
+	fclose(cc20_key);
+	randombytes_buf(iv, 8);
+	memcpy_s(output + 8, 24, deviceid, 24);
+	memcpy_s(output + 8+24, 32, device_nonce, 32);
+	crypto_stream_chacha20_xor(output + 8, output + 8, 56, iv, cc20_key_buf);
+	memcpy_s(output, 8, iv, 8);
+	printf_s("Reset Key:");
+	char display_output[129];
+	sodium_bin2hex(display_output, 129, output, 64);
+	printf_s(display_output);
+	printf_s("\n");
+	system("pause");
+	return true;
+}
+bool generate_encrypted_classroom(void)
+{
+	uint8_t output[125];
+	char deviceid[25];
+	char device_nonce[33];
+	char classroom[56] = { 0 };
+	char format_classroom[60] = { 0 };
+	uint8_t classroom_count = 0;
+	uint8_t iv[8];
+	/*printf_s("Enter Device ID:");
+	while (fgets(deviceid, 25, stdin))
+	{
+		if (deviceid[24] == 0)
+			break;
+	}
+	printf_s("Enter Device Nonce:");
+	while (fgets(device_nonce, 33, stdin))
+	{
+		if (device_nonce[32] == 0)
+			break;
+	}*/
+	printf_s("Enter Classroom Count+Classroom+Minor:");
+	while (fgets(classroom, 56, stdin))
+	{
+		if (classroom[strlen(classroom)] == '\0'&&strlen(classroom)>2)
+		{
+			break;
+		}
+	}
+	classroom_count = classroom[0]-'0';
+	for (uint8_t c = 0; c < classroom_count; c++)
+	{
+		memcpy_s(format_classroom + c * 6, 5, classroom + c * 5+1, 5);
+	}
+	printf_s("Enter Encryption Key filename:");
+	char cc20_key_filename[128];
+	scanf_s(" %s", &cc20_key_filename, 128);
+	FILE * cc20_key;
+	fopen_s(&cc20_key, cc20_key_filename, "rb");
+	if (cc20_key == NULL)
+	{
+		printf_s("Unable access file");
+		system("pause");
+		return false;
+	}
+	uint8_t cc20_key_buf[crypto_stream_chacha20_KEYBYTES];
+	fread_s(cc20_key_buf, crypto_stream_chacha20_KEYBYTES, sizeof(uint8_t), crypto_stream_chacha20_KEYBYTES, cc20_key);
+	fclose(cc20_key);
+	randombytes_buf(iv, 8);
 }

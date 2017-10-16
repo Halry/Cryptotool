@@ -67,6 +67,8 @@ bool main()
 		case 5:
 			printf_s("0:Go back\n");
 			printf_s("1:Create DFU Firmware for dfu_ce_v1\n");
+			printf_s("2:Tamper Flag Reset\n");
+			printf_s("3:Classroom Data Generate\n");
 			printf_s("Enter your choice:");
 			int ut_select;
 			scanf_s("%d", &ut_select);
@@ -74,6 +76,16 @@ bool main()
 			{
 				system("cls");
 				util_dfu_ce_v1_fw_encrypt();
+			}
+			else if (ut_select == 2)
+			{
+				system("cls");
+				Tamper_Reset_Data_Generator();
+			}
+			else if (ut_select == 3)
+			{
+				system("cls");
+				generate_encrypted_classroom();
 			}
 			break;
 		default:
