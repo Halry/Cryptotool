@@ -147,14 +147,14 @@ bool Tamper_Reset_Data_Generator(void)
 }
 bool generate_encrypted_classroom(void)
 {
-	uint8_t output[125];
+	uint8_t output[189];
 	char deviceid[25];
 	char device_nonce[33];
 	char classroom[56] = { 0 };
 	char format_classroom[60] = { 0 };
 	uint8_t classroom_count = 0;
 	uint8_t iv[8];
-	/*printf_s("Enter Device ID:");
+	printf_s("Enter Device ID:");
 	while (fgets(deviceid, 25, stdin))
 	{
 		if (deviceid[24] == 0)
@@ -165,7 +165,7 @@ bool generate_encrypted_classroom(void)
 	{
 		if (device_nonce[32] == 0)
 			break;
-	}*/
+	}
 	printf_s("Enter Classroom Count+Classroom+Minor:");
 	while (fgets(classroom, 56, stdin))
 	{
@@ -174,10 +174,70 @@ bool generate_encrypted_classroom(void)
 			break;
 		}
 	}
-	classroom_count = classroom[0]-'0';
-	for (uint8_t c = 0; c < classroom_count; c++)
+	classroom_count = classroom[0]-'0';//Get classroom count
+	for (uint8_t c = 0; c < classroom_count; c++)//format classroom for fit the dfu program
 	{
 		memcpy_s(format_classroom + c * 6, 5, classroom + c * 5+1, 5);
+	}
+	memcpy_s(format_classroom + classroom_count * 6, 4 * classroom_count, classroom + classroom_count * 5 + 1, classroom_count * 4);
+	//end format
+	printf_s("Enter Encryption Key filename:");
+	char cc20_key_filename[128];
+	scanf_s(" %s", &cc20_key_filename, 128);
+	FILE * cc20_key;
+	fopen_s(&cc20_key, cc20_key_filename, "rb");
+	if (cc20_key == NULL)
+	{
+		printf_s("Unable access file");
+		system("pause");
+		return false;
+	}
+	uint8_t cc20_key_buf[crypto_stream_chacha20_KEYBYTES];
+	fread_s(cc20_key_buf, crypto_stream_chacha20_KEYBYTES, sizeof(uint8_t), crypto_stream_chacha20_KEYBYTES, cc20_key);
+	fclose(cc20_key);
+	printf_s("Enter Signing Key filename:");
+	char sign_key_filename[128];
+	scanf_s(" %s", &sign_key_filename, 128);
+	FILE * sign_key;
+	fopen_s(&sign_key, sign_key_filename, "rb");
+	if (sign_key == NULL)
+	{
+		printf_s("Unable access file");
+		system("pause");
+		return false;
+	}
+	uint8_t sign_key_buf[crypto_sign_SECRETKEYBYTES];
+	fread_s(sign_key_buf, crypto_sign_SECRETKEYBYTES, sizeof(uint8_t), crypto_sign_SECRETKEYBYTES, sign_key);
+	fclose(sign_key);
+	randombytes_buf(iv, 8);
+	memcpy_s(output + 8, 24, deviceid, 24);
+	memcpy_s(output + 8 + 24, 32, device_nonce, 32);
+	memcpy_s(output + 8 + 24 + 32, 1, &classroom_count, 1);
+	memcpy_s(output + 8 + 24 + 32 + 1, 60, format_classroom, 60);
+	crypto_sign_detached(output + 125, NULL, output + 8, 117, sign_key_buf);
+	crypto_stream_chacha20_xor(output + 8, output + 8, 117, iv, cc20_key_buf);
+	memcpy_s(output, 8, iv, 8);
+	printf_s("Encrypted Classroom:");
+	char display_output[189 * 2+1];
+	sodium_bin2hex(display_output, 189 * 2+1, output,189);
+	printf_s(display_output);
+	printf_s("\n");
+	system("pause");
+}
+bool generate_encrypted_count(void)
+{
+	uint8_t output[106];
+	uint8_t iv[8];
+	char device_nonce[33];
+	int count = 0;
+	printf_s("Enter Count:");
+	scanf_s("%I16u", &count);
+	printf_s("Entered Count:%d\n",count);
+	printf_s("Enter Device Nonce:");
+	while (fgets(device_nonce, 33, stdin))
+	{
+		if (device_nonce[32] == 0)
+			break;
 	}
 	printf_s("Enter Encryption Key filename:");
 	char cc20_key_filename[128];
@@ -193,5 +253,30 @@ bool generate_encrypted_classroom(void)
 	uint8_t cc20_key_buf[crypto_stream_chacha20_KEYBYTES];
 	fread_s(cc20_key_buf, crypto_stream_chacha20_KEYBYTES, sizeof(uint8_t), crypto_stream_chacha20_KEYBYTES, cc20_key);
 	fclose(cc20_key);
+	printf_s("Enter Signing Key filename:");
+	char sign_key_filename[128];
+	scanf_s(" %s", &sign_key_filename, 128);
+	FILE * sign_key;
+	fopen_s(&sign_key, sign_key_filename, "rb");
+	if (sign_key == NULL)
+	{
+		printf_s("Unable access file");
+		system("pause");
+		return false;
+	}
+	uint8_t sign_key_buf[crypto_sign_SECRETKEYBYTES];
+	fread_s(sign_key_buf, crypto_sign_SECRETKEYBYTES, sizeof(uint8_t), crypto_sign_SECRETKEYBYTES, sign_key);
+	fclose(sign_key);
 	randombytes_buf(iv, 8);
+	memcpy_s(output + 8, 32, device_nonce, 32);
+	memcpy_s(output + 8 + 32, 2, &count, 2);
+	crypto_sign_detached(output + 42, NULL, output + 8,34, sign_key_buf);
+	crypto_stream_chacha20_xor(output + 8, output + 8, 34, iv, cc20_key_buf);
+	memcpy_s(output, 8, iv, 8);
+	printf_s("Encrypted Count:");
+	char display_output[106 * 2 + 1];
+	sodium_bin2hex(display_output, 106 * 2 + 1, output, 106);
+	printf_s(display_output);
+	printf_s("\n");
+	system("pause");
 }

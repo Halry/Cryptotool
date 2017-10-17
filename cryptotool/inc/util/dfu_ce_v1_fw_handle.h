@@ -4,4 +4,5 @@
 bool util_dfu_ce_v1_fw_encrypt(void);
 bool Tamper_Reset_Data_Generator(void);
 bool generate_encrypted_classroom(void);
+bool generate_encrypted_count(void);
 #endif

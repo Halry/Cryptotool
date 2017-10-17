@@ -69,6 +69,7 @@ bool main()
 			printf_s("1:Create DFU Firmware for dfu_ce_v1\n");
 			printf_s("2:Tamper Flag Reset\n");
 			printf_s("3:Classroom Data Generate\n");
+			printf_s("4:Count Data Generate\n");
 			printf_s("Enter your choice:");
 			int ut_select;
 			scanf_s("%d", &ut_select);
@@ -86,6 +87,11 @@ bool main()
 			{
 				system("cls");
 				generate_encrypted_classroom();
+			}
+			else if (ut_select == 4)
+			{
+				system("cls");
+				generate_encrypted_count();
 			}
 			break;
 		default:
