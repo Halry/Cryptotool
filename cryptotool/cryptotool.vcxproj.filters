@@ -47,10 +47,30 @@
     <ClCompile Include="src\util\dfu_ce_v1_fw_handle.cpp">
       <Filter>Source Files\util</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\dfu_sd_v1_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="libsodium\x64\Debug\v141\static\libsodium.lib">
       <Filter>Resource Files</Filter>
     </Library>
+    <Library Include="wolfssl\wolfssl.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wolfssl\wolfssl.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="wolfssl\wolfssl.exp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="wolfssl\wolfssl.ilk">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="wolfssl\wolfssl.pdb">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

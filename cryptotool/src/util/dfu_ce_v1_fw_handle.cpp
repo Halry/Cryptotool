@@ -223,6 +223,7 @@ bool generate_encrypted_classroom(void)
 	printf_s(display_output);
 	printf_s("\n");
 	system("pause");
+	return true;
 }
 bool generate_encrypted_count(void)
 {
@@ -231,7 +232,7 @@ bool generate_encrypted_count(void)
 	char device_nonce[33];
 	int count = 0;
 	printf_s("Enter Count:");
-	scanf_s("%I16u", &count);
+	scanf_s("%d", &count);
 	printf_s("Entered Count:%d\n",count);
 	printf_s("Enter Device Nonce:");
 	while (fgets(device_nonce, 33, stdin))
@@ -279,4 +280,5 @@ bool generate_encrypted_count(void)
 	printf_s(display_output);
 	printf_s("\n");
 	system("pause");
+	return true;
 }

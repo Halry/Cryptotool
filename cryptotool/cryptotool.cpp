@@ -4,14 +4,22 @@
 #include "stdafx.h"
 #define SODIUM_STATIC
 #include <libsodium/include/sodium.h>
+#include <wolfssl\wolfcrypt\wc_port.h>
 #include "inc/ed25519.h"
 #include "inc\rng.h"
 #include "inc\util\dfu_ce_v1_fw_handle.h"
+#include "inc\util\dfu_sd_v1_utils.h"
 bool main()
 {
 	if (sodium_init() < 0)
 	{
 		printf_s("Libsodium not good,press any key to exit");
+		system("pause");
+		exit(0);
+	}
+	if (wolfCrypt_Init() != 0)
+	{
+		printf_s("wolfCrypt not good,press any key to exit");
 		system("pause");
 		exit(0);
 	}
@@ -66,32 +74,52 @@ bool main()
 				break;
 		case 5:
 			printf_s("0:Go back\n");
-			printf_s("1:Create DFU Firmware for dfu_ce_v1\n");
-			printf_s("2:Tamper Flag Reset\n");
-			printf_s("3:Classroom Data Generate\n");
-			printf_s("4:Count Data Generate\n");
-			printf_s("Enter your choice:");
+			printf_s("1:DFU_ce_v1 Utils\n");
+			printf_s("2:DFU_sd_v1 Utils\n");
 			int ut_select;
 			scanf_s("%d", &ut_select);
 			if (ut_select == 1)
 			{
-				system("cls");
-				util_dfu_ce_v1_fw_encrypt();
+				printf_s("0:Go back\n");
+				printf_s("1:Create DFU Firmware for dfu_ce_v1\n");
+				printf_s("2:Tamper Flag Reset\n");
+				printf_s("3:Classroom Data Generate\n");
+				printf_s("4:Count Data Generate\n");
+				printf_s("Enter your choice:");
+				int dfuce_select;
+				scanf_s("%d", &dfuce_select);
+				if (dfuce_select == 1)
+				{
+					system("cls");
+					util_dfu_ce_v1_fw_encrypt();
+				}
+				else if (dfuce_select == 2)
+				{
+					system("cls");
+					Tamper_Reset_Data_Generator();
+				}
+				else if (dfuce_select == 3)
+				{
+					system("cls");
+					generate_encrypted_classroom();
+				}
+				else if (dfuce_select == 4)
+				{
+					system("cls");
+					generate_encrypted_count();
+				}
 			}
-			else if (ut_select == 2)
+			if (ut_select == 2)
 			{
-				system("cls");
-				Tamper_Reset_Data_Generator();
-			}
-			else if (ut_select == 3)
-			{
-				system("cls");
-				generate_encrypted_classroom();
-			}
-			else if (ut_select == 4)
-			{
-				system("cls");
-				generate_encrypted_count();
+				printf_s("0:Go back\n");
+				printf_s("1:Create DFU Firmware for dfu_sd_v1\n");
+				int dfusd_select;
+				scanf_s("%d", &dfusd_select);
+				if (dfusd_select == 1)
+				{
+					system("cls");
+					dfu_sd_v1_fw_encrypt();
+				}
 			}
 			break;
 		default:

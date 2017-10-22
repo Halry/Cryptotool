@@ -77,7 +77,7 @@
     <LinkIncremental>true</LinkIncremental>
     <SourcePath>$(SourcePath);$(ProjectDir)</SourcePath>
     <ExcludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x64);</ExcludePath>
-    <IncludePath>$(ProjectDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -153,6 +153,7 @@
     <ClCompile Include="src\ed25519.cpp" />
     <ClCompile Include="src\rng.cpp" />
     <ClCompile Include="src\util\dfu_ce_v1_fw_handle.cpp" />
+    <ClCompile Include="src\util\dfu_sd_v1_utils.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -162,6 +163,13 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="libsodium\x64\Debug\v141\static\libsodium.lib" />
+    <Library Include="wolfssl\wolfssl.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wolfssl\wolfssl.dll" />
+    <None Include="wolfssl\wolfssl.exp" />
+    <None Include="wolfssl\wolfssl.ilk" />
+    <None Include="wolfssl\wolfssl.pdb" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
